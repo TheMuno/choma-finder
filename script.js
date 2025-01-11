@@ -51,7 +51,7 @@ async function searchForNearbyPlaces(
                                     latitude, 
                                     longitude, 
                                     radius=500.0, 
-                                    maxResultCount=5, 
+                                    maxResultCount=10, 
                                     includedTypes=['restaurant']
                                 ) {
     const nearbySearchUrl = 'https://places.googleapis.com/v1/places:searchNearby';
@@ -70,7 +70,7 @@ async function searchForNearbyPlaces(
         }           
     };
 
-    const fieldMask = 'places.location,places.displayName,places.delivery,places.dineIn,places.takeout,places.websiteUri,places.rating,places.restroom,places.reviews,places.priceRange,places.priceLevel,places.parkingOptions,places.outdoorSeating,places.allowsDogs,places.businessStatus,places.currentOpeningHours';
+    const fieldMask = 'places.location,places.displayName'; //,places.delivery,places.dineIn,places.takeout,places.websiteUri,places.rating,places.restroom,places.reviews,places.priceRange,places.priceLevel,places.parkingOptions,places.outdoorSeating,places.allowsDogs,places.businessStatus,places.currentOpeningHours';
 
     const res = await fetch(nearbySearchUrl, {
         method: 'POST',
@@ -82,8 +82,13 @@ async function searchForNearbyPlaces(
         body: JSON.stringify(payload),
     });
 
-    const data = res.json();
-    console.log(data)
+    const places = await res.json();
+    console.log(places)
+
+    places.forEach(place => {
+        const { displayName: { text:title }, location } = place;
+        createMarker(title, location);
+    });
 }
 
 function createMarker(title, position) {
