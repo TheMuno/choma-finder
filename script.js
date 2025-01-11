@@ -1,3 +1,6 @@
+const $bg = document.querySelector('.bg-loader');
+const $loader = $bg.querySelector('.bg-load');
+
 !async function setupHotelAutocompleteInp() {
     await google.maps.importLibrary('places');
 
@@ -24,7 +27,9 @@
 
         // localStorage['ak-hotel'] = hotel;
 
-        searchForNearbyPlaces(lat, lng); 
+        $loader.classList.add('spinner');
+        await searchForNearbyPlaces(lat, lng); 
+        $bg.remove();
     });
 }(); 
 
