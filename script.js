@@ -93,6 +93,7 @@ async function searchForNearbyPlaces(
         const position = { lat, lng };
         createMarker(title, position);
         map.setCenter(position);
+        map.setZoom(15);
     });
 }
 
