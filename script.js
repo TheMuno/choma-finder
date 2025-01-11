@@ -38,6 +38,7 @@ let map;
 
     // Request needed libraries
     const { Map } = await google.maps.importLibrary('maps');
+    const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
 
     map = new google.maps.Map($map, {
         zoom: 12,
@@ -84,28 +85,20 @@ async function searchForNearbyPlaces(
 
     const data = await res.json();
     const { places } = data;
-    
+
     console.log(places)
 
     places.forEach(place => {
-        const { displayName: { text:title }, location } = place;
-        createMarker(title, location);
+        const { displayName: { text:title }, location: { latitude:lat, longitude:lng } } = place;
+        createMarker(title, {lat, lng});
     });
 }
 
 function createMarker(title, position) {
-    const marker = new google.maps.Marker({
+    const marker = new google.maps.marker.AdvancedMarkerElement({
         map,
-        // icon,
-        title, 
-        position,  
+        position,
+        title,
     });
-
-    marker.addListener('click', () => { 
-        markerPopup.close();
-        markerPopup.setContent(marker.getTitle());
-        markerPopup.open(marker.getMap(), marker);
-    });
-
-    return marker; 
 } 
+
