@@ -113,7 +113,7 @@ function createMarker(title, position) {
     });
 
     marker.addListener('gmp-click', ({ domEvent, latLng }) => {
-        const { target } = domEvent;
+        // const { target } = domEvent;
         
         infoWindow.close();
         infoWindow.setContent(marker.title);
