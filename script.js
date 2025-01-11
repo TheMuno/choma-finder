@@ -70,7 +70,7 @@ async function searchForNearbyPlaces(
         }           
     };
 
-    const fieldMask = 'place.location,place.displayName';//,place.delivery,place.dineIn,place.takeout,place.websiteUri,place.rating,place.restroom,place.reviews,place.priceRange,place.priceLevel,place.parkingOptions,place.outdoorSeating,place.allowsDogs,place.businessStatus,place.currentOpeningHours';
+    const fieldMask = 'places.location,places.displayName,places.delivery,places.dineIn,places.takeout,places.websiteUri,places.rating,places.restroom,places.reviews,places.priceRange,places.priceLevel,places.parkingOptions,places.outdoorSeating,places.allowsDogs,places.businessStatus,places.currentOpeningHours';
 
     const res = await fetch(nearbySearchUrl, {
         method: 'POST',
