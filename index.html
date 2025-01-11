@@ -46,9 +46,13 @@
 
                 const res = place.toJSON(); 
                 const hotel = res.displayName;
-                console.log(res);
+                console.log('Autocomplete Res::', res);
+                
+                const { location: { lat, lng } } = res; 
 
                 // localStorage['ak-hotel'] = hotel;
+
+                searchForNearbyPlaces(lat, lng); 
             });
         }(); 
 
@@ -71,19 +75,25 @@
             });
         }();
 
-        async function searchForNearbyPlaces(lat, lng, radius, includedTypes) {
+        async function searchForNearbyPlaces(
+                                            latitude, 
+                                            longitude, 
+                                            radius=500.0, 
+                                            maxResultCount=5, 
+                                            includedTypes=['restaurant']
+                                        ) {
             const nearbySearchUrl = 'https://places.googleapis.com/v1/places:searchNearby';
             const key = 'AIzaSyDM7Sbx3ogbiG0l_c-j7PJk4m1ivbddY4I';
             const payload = {
-                'includedTypes': ['restaurant'],
-                'maxResultCount': 10,
-                'locationRestriction': {
-                    'circle': {
-                    'center': {
-                        'latitude': lat,
-                        'longitude': lng,
-                    },
-                    'radius': radius,
+                includedTypes,
+                maxResultCount,
+                locationRestriction: {
+                    circle: {
+                        center: {
+                            latitude,
+                            longitude,
+                        },
+                        radius,
                     }
                 }           
             };
