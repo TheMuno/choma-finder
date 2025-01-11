@@ -82,7 +82,9 @@ async function searchForNearbyPlaces(
         body: JSON.stringify(payload),
     });
 
-    const places = await res.json();
+    const data = await res.json();
+    const { places } = data;
+    
     console.log(places)
 
     places.forEach(place => {
