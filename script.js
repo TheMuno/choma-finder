@@ -27,14 +27,15 @@ const $loader = $bg.querySelector('.bg-load');
 
         // localStorage['ak-hotel'] = hotel;
 
-        $loader.classList.add('spinner');
+        $bg.classList.remove('hide');
+        // $loader.classList.add('spinner');
         await searchForNearbyPlaces(lat, lng); 
-        $bg.remove();
+        $bg.classList.add('hide');
     });
 }(); 
 
 const $map = document.querySelector('.map');
-let map;
+let map, infoWindow;
 !async function initMap(markerCoords=[]) {
     // The map location
     const nrbLat = -1.28333;
@@ -42,8 +43,9 @@ let map;
     const nrbCoords = { lat: nrbLat, lng: nrbLng };
 
     // Request needed libraries
-    const { Map } = await google.maps.importLibrary('maps');
+    const { Map, InfoWindow } = await google.maps.importLibrary('maps');
     const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
+    infoWindow = new InfoWindow();
 
     map = new google.maps.Map($map, {
         zoom: 12,
@@ -110,7 +112,7 @@ function createMarker(title, position) {
         gmpClickable: true,
     });
 
-    marker.addListener('click', ({ domEvent, latLng }) => {
+    marker.addListener('gmp-click', ({ domEvent, latLng }) => {
         const { target } = domEvent;
         
         infoWindow.close();
