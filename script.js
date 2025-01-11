@@ -107,6 +107,15 @@ function createMarker(title, position) {
         map,
         position,
         title,
+        gmpClickable: true,
+    });
+
+    marker.addListener('click', ({ domEvent, latLng }) => {
+        const { target } = domEvent;
+        
+        infoWindow.close();
+        infoWindow.setContent(marker.title);
+        infoWindow.open(marker.map, marker);
     });
 } 
 
