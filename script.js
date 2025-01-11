@@ -90,7 +90,9 @@ async function searchForNearbyPlaces(
 
     places.forEach(place => {
         const { displayName: { text:title }, location: { latitude:lat, longitude:lng } } = place;
-        createMarker(title, {lat, lng});
+        const position = { lat, lng };
+        createMarker(title, position);
+        map.setCenter(position);
     });
 }
 
