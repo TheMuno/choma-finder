@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choma Finder</title>
     <style>
+        .section {
+            width: 80%;
+            margin: 100px auto;
+        }
+
         .map {
             height: 600px;
             width: 80%;
@@ -13,11 +18,40 @@
     </style>
 </head>
 <body>
+    <div class="section">
+        <div class="autocomplete"></div>
+    </div>
     <div class="map"></div>
 
     <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
         ({key: "AIzaSyDM7Sbx3ogbiG0l_c-j7PJk4m1ivbddY4I", v: "beta"});</script>
     <script>
+        !async function setupHotelAutocompleteInp() {
+            await google.maps.importLibrary('places');
+
+            // Create the input HTML element, and append it.
+            const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement({
+                componentRestrictions: {country: ['us']},
+            });
+
+            // document.body.appendChild(placeAutocomplete); 
+            const $hotelWrap = document.querySelector('.autocomplete');
+            $hotelWrap.appendChild(placeAutocomplete);
+
+            // Add the gmp-placeselect listener, and display the results.
+            placeAutocomplete.addEventListener('gmp-placeselect', async ({ place }) => {
+                await place.fetchFields({
+                    fields: ['displayName', 'formattedAddress', 'location'],
+                });
+
+                const res = place.toJSON(); 
+                const hotel = res.displayName;
+                console.log(res);
+
+                // localStorage['ak-hotel'] = hotel;
+            });
+        }(); 
+
         const $map = document.querySelector('.map');
         let map;
         !async function initMap(markerCoords=[]) {
@@ -36,6 +70,57 @@
                 mapTypeControl: false,
             });
         }();
+
+        async function searchForNearbyPlaces(lat, lng, radius, includedTypes) {
+            const nearbySearchUrl = 'https://places.googleapis.com/v1/places:searchNearby';
+            const key = 'AIzaSyDM7Sbx3ogbiG0l_c-j7PJk4m1ivbddY4I';
+            const payload = {
+                'includedTypes': ['restaurant'],
+                'maxResultCount': 10,
+                'locationRestriction': {
+                    'circle': {
+                    'center': {
+                        'latitude': lat,
+                        'longitude': lng,
+                    },
+                    'radius': radius,
+                    }
+                }           
+            };
+
+            const fieldMask = 'place.location,place.displayName,place.delivery,place.dineIn,place.takeout,place.websiteUri,place.rating,place.restroom,place.reviews,place.priceRange,place.priceLevel,place.parkingOptions,place.outdoorSeating,place.allowsDogs,place.businessStatus,place.currentOpeningHours';
+
+            const res = await fetch(nearbySearchUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Goog-Api-Key': key,
+                    'X-Goog-FieldMask': fieldMask,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = res.json();
+            console.log(data)
+        }
+        
+        function createMarker(title, position) {
+            const marker = new google.maps.Marker({
+                map,
+                // icon,
+                title, 
+                position,  
+            });
+
+            marker.addListener('click', () => { 
+                markerPopup.close();
+                markerPopup.setContent(marker.getTitle());
+                markerPopup.open(marker.getMap(), marker);
+            });
+
+            return marker; 
+        } 
+
     </script>
 </body>
 </html> 
